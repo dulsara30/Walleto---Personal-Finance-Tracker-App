@@ -4,5 +4,6 @@ import java.io.Serializable
 
 data class CategoryBudget(
     val category: String,
-    var budget: Double
+    var budget: Double,
+    var spent: Double = 0.0
 ) : Serializable 

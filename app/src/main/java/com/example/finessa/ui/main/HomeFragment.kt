@@ -18,10 +18,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finessa.R
 import com.example.finessa.adapter.TransactionAdapter
+import com.example.finessa.databinding.FragmentHomeBinding
 import com.example.finessa.model.Transaction
 import com.example.finessa.ui.dialog.TransactionDialogFragment
 import com.google.android.material.button.MaterialButton
@@ -35,9 +37,12 @@ import com.google.gson.reflect.TypeToken
 import java.util.Calendar
 import java.util.Date
 import androidx.navigation.fragment.findNavController
+import com.example.finessa.utils.CurrencyManager
 
 class HomeFragment : Fragment() {
 
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
     private lateinit var adapter: TransactionAdapter
     private lateinit var tvBalance: TextView
     private lateinit var tvBudgetStatus: TextView
@@ -65,8 +70,9 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,27 +81,20 @@ class HomeFragment : Fragment() {
         checkNotificationPermission()
 
         // Initialize views
-        tvBalance = view.findViewById(R.id.tvBalance)
-        tvBudgetStatus = view.findViewById(R.id.tvBudgetStatus)
-        progressBudget = view.findViewById(R.id.progressBudget)
-        cardBudgetStatus = view.findViewById(R.id.cardBudgetStatus)
-        rvTransactions = view.findViewById(R.id.rvTransactions)
-        fabAddTransaction = view.findViewById(R.id.fabAddTransaction)
-        btnAddIncome = view.findViewById(R.id.btnAddIncome)
-        btnAddExpense = view.findViewById(R.id.btnAddExpense)
+        tvBalance = binding.tvBalance
+        tvBudgetStatus = binding.tvBudgetStatus
+        progressBudget = binding.progressBudget
+        cardBudgetStatus = binding.cardBudgetStatus
+        rvTransactions = binding.rvTransactions
+        fabAddTransaction = binding.fabAddTransaction
+        btnAddIncome = binding.btnAddIncome
+        btnAddExpense = binding.btnAddExpense
 
         // Initialize SharedPreferences
         sharedPreferences = requireContext().getSharedPreferences("finance_tracker", 0)
 
         // Setup RecyclerView
-        adapter = TransactionAdapter(
-            onItemClick = { transaction ->
-                showTransactionDialog(isIncome = transaction.isIncome, existingTransaction = transaction)
-            },
-            onDeleteClick = { transaction ->
-                showDeleteConfirmationDialog(transaction)
-            }
-        )
+        adapter = TransactionAdapter(requireContext())
         rvTransactions.layoutManager = LinearLayoutManager(context)
         rvTransactions.adapter = adapter
 
@@ -107,13 +106,14 @@ class HomeFragment : Fragment() {
         // Load saved data
         loadSavedData()
         updateBudgetStatus()
+        observeCurrencyChanges()
     }
 
     private fun showTransactionDialog(isIncome: Boolean, existingTransaction: Transaction? = null) {
         TransactionDialogFragment(
             isIncome = isIncome,
             onSave = { transaction ->
-                val transactions = adapter.transactionsList.toMutableList()
+                val transactions = adapter.currentList.toMutableList()
                 
                 if (!isIncome) {
                     if (!validateBudgets(transaction, transactions)) {
@@ -131,7 +131,7 @@ class HomeFragment : Fragment() {
                     transactions.add(0, transaction)
                     showSnackbar("Transaction added successfully")
                 }
-                adapter.updateTransactions(transactions)
+                adapter.submitList(transactions)
                 updateBalance(transactions)
                 updateBudgetStatus()
                 saveData(transactions)
@@ -233,7 +233,7 @@ class HomeFragment : Fragment() {
     private fun updateBudgetStatus() {
         val monthlyBudget = sharedPreferences.getFloat("monthly_budget", 0f)
         if (monthlyBudget > 0) {
-            val currentExpenses = getCurrentMonthExpenses(adapter.transactionsList)
+            val currentExpenses = getCurrentMonthExpenses(adapter.currentList)
             val percentage = (currentExpenses / monthlyBudget.toDouble() * 100).toInt()
             
             progressBudget.progress = percentage
@@ -387,9 +387,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun deleteTransaction(transaction: Transaction) {
-        val transactions = adapter.transactionsList.toMutableList()
+        val transactions = adapter.currentList.toMutableList()
         transactions.remove(transaction)
-        adapter.updateTransactions(transactions)
+        adapter.submitList(transactions)
         updateBalance(transactions)
         saveData(transactions)
         showSnackbar("Transaction deleted")
@@ -406,7 +406,7 @@ class HomeFragment : Fragment() {
         } else {
             emptyList()
         }
-        adapter.updateTransactions(transactions)
+        adapter.submitList(transactions)
         updateBalance(transactions)
     }
 
@@ -419,7 +419,7 @@ class HomeFragment : Fragment() {
         val balance = transactions.sumOf { transaction ->
             if (transaction.isIncome) transaction.amount else -transaction.amount
         }
-        tvBalance.text = "$${String.format("%.2f", balance)}"
+        tvBalance.text = CurrencyManager.formatAmount(requireContext(), balance)
     }
 
     private fun createNotificationChannel() {
@@ -463,5 +463,38 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun observeCurrencyChanges() {
+        CurrencyManager.currencyChanged.observe(viewLifecycleOwner, Observer { _ ->
+            updateAmounts()
+            adapter.notifyDataSetChanged()
+        })
+    }
+
+    private fun updateAmounts() {
+        val transactionsJson = sharedPreferences.getString("transactions", null)
+        val transactions = if (transactionsJson != null) {
+            gson.fromJson<List<Transaction>>(transactionsJson, transactionType)
+        } else {
+            emptyList()
+        }
+
+        val totalIncome = transactions.filter { it.isIncome }.sumOf { it.amount }
+        val totalExpenses = transactions.filter { !it.isIncome }.sumOf { it.amount }
+        val balance = totalIncome - totalExpenses
+
+        tvBalance.text = CurrencyManager.formatAmount(requireContext(), balance)
+        updateBudgetStatus()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadSavedData()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

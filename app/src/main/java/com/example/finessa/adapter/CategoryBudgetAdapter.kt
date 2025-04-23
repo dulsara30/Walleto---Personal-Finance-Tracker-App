@@ -1,61 +1,58 @@
 package com.example.finessa.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finessa.R
+import com.example.finessa.databinding.ItemCategoryBudgetBinding
 import com.example.finessa.model.CategoryBudget
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.google.android.material.textfield.TextInputEditText
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.finessa.utils.CurrencyManager
 
 class CategoryBudgetAdapter(
-    private val onSave: (String, Double) -> Unit
-) : RecyclerView.Adapter<CategoryBudgetAdapter.CategoryBudgetViewHolder>() {
+    private val context: android.content.Context
+) : ListAdapter<CategoryBudget, CategoryBudgetAdapter.BudgetViewHolder>(BudgetDiffCallback()) {
 
-    private var budgets: List<CategoryBudget> = emptyList()
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
-
-    class CategoryBudgetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
-        val etBudget: TextInputEditText = itemView.findViewById(R.id.etBudget)
-        val btnSave: MaterialButton = itemView.findViewById(R.id.btnSave)
-        val progressBar: LinearProgressIndicator = itemView.findViewById(R.id.progressBar)
-        val tvProgress: TextView = itemView.findViewById(R.id.tvProgress)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BudgetViewHolder {
+        val binding = ItemCategoryBudgetBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return BudgetViewHolder(binding)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryBudgetViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_category_budget, parent, false)
-        return CategoryBudgetViewHolder(view)
+    override fun onBindViewHolder(holder: BudgetViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
-    override fun onBindViewHolder(holder: CategoryBudgetViewHolder, position: Int) {
-        val budget = budgets[position]
-        holder.tvCategory.text = budget.category
-        holder.etBudget.setText(budget.budget.toString())
+    inner class BudgetViewHolder(
+        private val binding: ItemCategoryBudgetBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        // Calculate progress (example: 75% spent)
-        val progress = 75 // This should be calculated based on actual spending
-        holder.progressBar.progress = progress
-        holder.tvProgress.text = "$${budget.budget} • $progress% spent"
-
-        holder.btnSave.setOnClickListener {
-            val newBudget = holder.etBudget.text.toString().toDoubleOrNull()
-            if (newBudget != null) {
-                onSave(budget.category, newBudget)
+        fun bind(budget: CategoryBudget) {
+            binding.apply {
+                tvCategory.text = budget.category
+                etBudget.setText(CurrencyManager.formatAmount(context, budget.budget))
+                
+                val progress = if (budget.budget > 0) {
+                    (budget.spent / budget.budget * 100).toInt()
+                } else {
+                    0
+                }
+                progressBar.progress = progress
+                tvProgress.text = "$progress%"
             }
         }
     }
 
-    override fun getItemCount() = budgets.size
+    private class BudgetDiffCallback : DiffUtil.ItemCallback<CategoryBudget>() {
+        override fun areItemsTheSame(oldItem: CategoryBudget, newItem: CategoryBudget): Boolean {
+            return oldItem.category == newItem.category
+        }
 
-    fun updateBudgets(newBudgets: List<CategoryBudget>) {
-        budgets = newBudgets
-        notifyDataSetChanged()
+        override fun areContentsTheSame(oldItem: CategoryBudget, newItem: CategoryBudget): Boolean {
+            return oldItem == newItem
+        }
     }
 } 

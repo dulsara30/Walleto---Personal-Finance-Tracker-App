@@ -1,65 +1,59 @@
 package com.example.finessa.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finessa.R
+import com.example.finessa.databinding.TransactionItemBinding
 import com.example.finessa.model.Transaction
+import com.example.finessa.utils.CurrencyManager
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TransactionAdapter(
-    private var transactions: List<Transaction> = emptyList(),
-    private val onItemClick: (Transaction) -> Unit,
-    private val onDeleteClick: (Transaction) -> Unit
-) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
-
-    private val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-
-    class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title: TextView = itemView.findViewById(R.id.tvTitle)
-        val category: TextView = itemView.findViewById(R.id.tvCategory)
-        val amount: TextView = itemView.findViewById(R.id.tvAmount)
-        val deleteButton: ImageButton = itemView.findViewById(R.id.btnDelete)
-    }
+    private val context: android.content.Context
+) : ListAdapter<Transaction, TransactionAdapter.TransactionViewHolder>(TransactionDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.transaction_item, parent, false)
-        return TransactionViewHolder(view)
+        val binding = TransactionItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return TransactionViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val transaction = transactions[position]
-        holder.title.text = transaction.title
-        holder.category.text = "${transaction.category} • ${dateFormat.format(transaction.date)}"
-        holder.amount.text = if (transaction.isIncome) {
-            "+$${String.format("%.2f", transaction.amount)}"
-        } else {
-            "-$${String.format("%.2f", transaction.amount)}"
+        holder.bind(getItem(position))
+    }
+
+    inner class TransactionViewHolder(
+        private val binding: TransactionItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(transaction: Transaction) {
+            binding.apply {
+                tvTitle.text = transaction.title
+                tvCategory.text = transaction.category
+                tvAmount.text = CurrencyManager.formatAmount(context, transaction.amount)
+                tvAmount.setTextColor(
+                    context.getColor(
+                        if (transaction.isIncome) android.R.color.holo_green_dark
+                        else android.R.color.holo_red_dark
+                    )
+                )
+            }
         }
-        holder.amount.setTextColor(
-            holder.itemView.context.getColor(
-                if (transaction.isIncome) R.color.success else R.color.error
-            )
-        )
-
-        // Set up click listeners
-        holder.itemView.setOnClickListener { onItemClick(transaction) }
-        holder.deleteButton.setOnClickListener { onDeleteClick(transaction) }
     }
 
-    override fun getItemCount() = transactions.size
+    private class TransactionDiffCallback : DiffUtil.ItemCallback<Transaction>() {
+        override fun areItemsTheSame(oldItem: Transaction, newItem: Transaction): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-    fun updateTransactions(newTransactions: List<Transaction>) {
-        transactions = newTransactions
-        notifyDataSetChanged()
+        override fun areContentsTheSame(oldItem: Transaction, newItem: Transaction): Boolean {
+            return oldItem == newItem
+        }
     }
-
-    // Expose transactions list for external access
-    val transactionsList: List<Transaction>
-        get() = transactions
 }

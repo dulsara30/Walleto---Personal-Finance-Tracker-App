@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.finessa.R
 import com.example.finessa.databinding.FragmentAddTransactionBinding
 import com.example.finessa.model.Transaction
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import java.util.Date
 
@@ -47,8 +48,11 @@ class AddTransactionFragment : Fragment() {
     }
 
     private fun setupTypeSelection() {
-        binding.cgType.setOnCheckedChangeListener { _, checkedId ->
-            // Handle type selection if needed
+        binding.cgType.setOnCheckedChangeListener { group, _ ->
+            val selectedChip = group.findViewById<Chip>(group.checkedChipId)
+            if (selectedChip != null) {
+                // Handle chip selection
+            }
         }
     }
 

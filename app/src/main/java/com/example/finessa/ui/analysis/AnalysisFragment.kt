@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.example.finessa.R
 import com.example.finessa.databinding.FragmentAnalysisBinding
 import com.example.finessa.model.Transaction
+import com.example.finessa.utils.CurrencyManager
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -51,6 +53,32 @@ class AnalysisFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupPieCharts()
+        observeCurrencyChanges()
+    }
+
+    private fun observeCurrencyChanges() {
+        CurrencyManager.currencyChanged.observe(viewLifecycleOwner, Observer { _ ->
+            updateAmounts()
+        })
+    }
+
+    private fun updateAmounts() {
+        // Get the current data
+        val sharedPreferences = requireContext().getSharedPreferences("finance_tracker", 0)
+        val transactionsJson = sharedPreferences.getString("transactions", null)
+        val transactions = if (transactionsJson != null) {
+            gson.fromJson<List<Transaction>>(transactionsJson, transactionType)
+        } else {
+            emptyList()
+        }
+
+        // Calculate totals
+        val totalExpenses = transactions.filter { !it.isIncome }.sumOf { it.amount }
+        val totalIncome = transactions.filter { it.isIncome }.sumOf { it.amount }
+
+        // Update text views with formatted amounts
+        binding.tvTotalSpending.text = "Total Expenses: ${CurrencyManager.formatAmount(requireContext(), totalExpenses)}"
+        binding.tvTotalIncome.text = "Total Income: ${CurrencyManager.formatAmount(requireContext(), totalIncome)}"
     }
 
     override fun onResume() {
@@ -123,7 +151,7 @@ class AnalysisFragment : Fragment() {
             }
 
             // Update text views with analysis data
-            updateSummaryTexts(expenseEntries, incomeEntries)
+            updateAmounts()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -136,17 +164,6 @@ class AnalysisFragment : Fragment() {
 
     private fun updateCharts() {
         setupPieCharts()
-    }
-
-    private fun updateSummaryTexts(expenseEntries: ArrayList<PieEntry>, incomeEntries: ArrayList<PieEntry>) {
-        val totalExpenses = expenseEntries.sumOf { it.value.toDouble() }
-        val totalIncome = incomeEntries.sumOf { it.value.toDouble() }
-        
-        binding.tvTotalSpending.text = "Total Expenses: $${String.format("%.2f", totalExpenses)}"
-        binding.tvTotalIncome.text = "Total Income: $${String.format("%.2f", totalIncome)}"
-        
-        val largestExpenseCategory = expenseEntries.maxByOrNull { it.value }
-        binding.tvLargestCategory.text = "Largest Category: ${largestExpenseCategory?.label ?: "-"}"
     }
 
     private fun setupPieChart(chart: com.github.mikephil.charting.charts.PieChart, entries: ArrayList<PieEntry>, label: String) {
