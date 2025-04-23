@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Wallet Colors -->
+    <color name="colorPrimary">#6B1D28</color>
+    <color name="colorPrimaryDark">#4A1019</color>
+    <color name="colorAccent">#F4B400</color>
+
+    <!-- Backgrounds & Surfaces -->
+    <color name="backgroundLight">#FDFDFD</color>
+    <color name="backgroundDark">#1E1E1E</color>
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+
+    <!-- Icon / Button Tinting -->
+    <color name="iconColor">#F4B400</color>
+    <color name="buttonColor">#6B1D28</color>
+    <color name="buttonText">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="error">#DC3545</color>
+    <color name="success">#28A745</color>
+    <color name="warning">#FFC107</color>
+
+    <!-- Light Status Colors -->
+    <color name="error_light">#F8D7DA</color>
+    <color name="success_light">#D4EDDA</color>
+    <color name="warning_light">#FFF3CD</color>
+
+    <!-- Extras -->
+    <color name="cardBackground">#FFF9F0</color>
+    <color name="dividerColor">#E0E0E0</color>
+
+    <!-- Legacy mappings for backward compatibility -->
+    <color name="primary">@color/colorPrimary</color>
+    <color name="primary_dark">@color/colorPrimaryDark</color>
+    <color name="accent">@color/colorAccent</color>
+    <color name="background">@color/backgroundLight</color>
+    <color name="surface">@color/backgroundLight</color>
+    <color name="card_background">@color/cardBackground</color>
+    <color name="text_primary">@color/textPrimary</color>
+    <color name="text_secondary">@color/textSecondary</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
