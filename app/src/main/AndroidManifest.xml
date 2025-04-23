@@ -13,8 +13,9 @@
         android:theme="@style/Theme.Walleto">
 
         <activity
-            android:name=".ui.onboarding.OnboardingActivity"
-            android:exported="true">
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Walleto.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

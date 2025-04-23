@@ -19,12 +19,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tvExpensesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Expenses by Category"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAnalysisTitle" />
+
         <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
+            android:id="@+id/pieChartExpenses"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tvAnalysisTitle" />
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvExpensesTitle" />
+
+        <TextView
+            android:id="@+id/tvIncomeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Income by Category"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pieChartExpenses" />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChartIncome"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvIncomeTitle" />
 
         <TextView
             android:id="@+id/tvTotalSpending"
@@ -34,7 +63,17 @@
             android:text="Total Spending: $0.00"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pieChart" />
+            app:layout_constraintTop_toBottomOf="@id/pieChartIncome" />
+
+        <TextView
+            android:id="@+id/tvTotalIncome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Total Income: $0.00"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTotalSpending" />
 
         <TextView
             android:id="@+id/tvLargestCategory"
@@ -44,7 +83,7 @@
             android:text="Largest Category: -"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTotalSpending" />
+            app:layout_constraintTop_toBottomOf="@id/tvTotalIncome" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

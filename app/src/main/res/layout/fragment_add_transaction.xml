@@ -2,107 +2,178 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/form_background">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilTitle"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="@color/backgroundLight"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTitle"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:textSize="16sp"
-                android:maxLines="1" />
+                android:padding="24dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <ImageView
+                    android:id="@+id/ivFormIcon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_logo2"
+                    android:padding="8dp"
+                    android:background="@drawable/circle_background"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilAmount"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Amount"
-            app:layout_constraintTop_toBottomOf="@id/tilTitle">
+                <TextView
+                    android:id="@+id/tvFormTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add New Transaction"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textPrimary"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintTop_toBottomOf="@id/ivFormIcon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAmount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textSize="16sp"
-                android:maxLines="1" />
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:singleSelection="true"
+                    app:layout_constraintTop_toBottomOf="@id/tvFormTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipIncome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Income"
+                        android:textSize="16sp"
+                        app:chipIcon="@drawable/ic_income"
+                        app:chipIconTint="@color/colorAccent"
+                        app:chipBackgroundColor="@color/cardBackground"
+                        app:chipStrokeColor="@color/colorAccent"
+                        app:chipStrokeWidth="1dp"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilCategory"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Category"
-            app:layout_constraintTop_toBottomOf="@id/tilAmount">
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipExpense"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Expense"
+                        android:textSize="16sp"
+                        app:chipIcon="@drawable/ic_expense"
+                        app:chipIconTint="@color/colorPrimary"
+                        app:chipBackgroundColor="@color/cardBackground"
+                        app:chipStrokeColor="@color/colorPrimary"
+                        app:chipStrokeWidth="1dp"
+                        style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-            <AutoCompleteTextView
-                android:id="@+id/actvCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif" />
+                </com.google.android.material.chip.ChipGroup>
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilTitle"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:hint="Title"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:hintTextColor="@color/colorPrimary"
+                    app:boxBackgroundColor="@color/backgroundLight"
+                    app:layout_constraintTop_toBottomOf="@id/cgType">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tilCategory">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:textSize="16sp"
+                        android:maxLines="1" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipIncome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Income"
-                android:textSize="16sp"
-                app:chipIcon="@drawable/ic_income"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Expense"
-                android:textSize="16sp"
-                app:chipIcon="@drawable/ic_expense"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilAmount"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Amount"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:hintTextColor="@color/colorPrimary"
+                    app:boxBackgroundColor="@color/backgroundLight"
+                    app:startIconDrawable="@drawable/ic_baseline_account_balance_wallet_24"
+                    app:startIconTint="@color/colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/tilTitle">
 
-        </com.google.android.material.chip.ChipGroup>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:textSize="16sp"
+                        android:maxLines="1" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Save Transaction"
-            android:textSize="16sp"
-            android:textAllCaps="false"
-            app:cornerRadius="8dp"
-            app:layout_constraintTop_toBottomOf="@id/cgType" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCategory"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Category"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:hintTextColor="@color/colorPrimary"
+                    app:boxBackgroundColor="@color/backgroundLight"
+                    app:startIconDrawable="@drawable/ic_budget"
+                    app:startIconTint="@color/colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/tilAmount">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="Save Transaction"
+                    android:textSize="18sp"
+                    android:textAllCaps="false"
+                    android:padding="16dp"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/tilCategory" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView> 
