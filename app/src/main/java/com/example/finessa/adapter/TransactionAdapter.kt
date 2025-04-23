@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TransactionAdapter(
-    private val context: android.content.Context
+    private val context: android.content.Context,
+    private val onEditClick: (Transaction) -> Unit,
+    private val onDeleteClick: (Transaction) -> Unit
 ) : ListAdapter<Transaction, TransactionAdapter.TransactionViewHolder>(TransactionDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -43,6 +45,10 @@ class TransactionAdapter(
                         else android.R.color.holo_red_dark
                     )
                 )
+
+                // Set up click listeners
+                root.setOnClickListener { onEditClick(transaction) }
+                btnDelete.setOnClickListener { onDeleteClick(transaction) }
             }
         }
     }

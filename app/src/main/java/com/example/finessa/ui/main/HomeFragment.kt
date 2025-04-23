@@ -49,7 +49,6 @@ class HomeFragment : Fragment() {
     private lateinit var progressBudget: LinearProgressIndicator
     private lateinit var cardBudgetStatus: MaterialCardView
     private lateinit var rvTransactions: RecyclerView
-    private lateinit var fabAddTransaction: FloatingActionButton
     private lateinit var btnAddIncome: MaterialButton
     private lateinit var btnAddExpense: MaterialButton
     private lateinit var sharedPreferences: SharedPreferences
@@ -86,7 +85,6 @@ class HomeFragment : Fragment() {
         progressBudget = binding.progressBudget
         cardBudgetStatus = binding.cardBudgetStatus
         rvTransactions = binding.rvTransactions
-        fabAddTransaction = binding.fabAddTransaction
         btnAddIncome = binding.btnAddIncome
         btnAddExpense = binding.btnAddExpense
 
@@ -94,14 +92,21 @@ class HomeFragment : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("finance_tracker", 0)
 
         // Setup RecyclerView
-        adapter = TransactionAdapter(requireContext())
+        adapter = TransactionAdapter(
+            context = requireContext(),
+            onEditClick = { transaction ->
+                showTransactionDialog(isIncome = transaction.isIncome, existingTransaction = transaction)
+            },
+            onDeleteClick = { transaction ->
+                showDeleteConfirmationDialog(transaction)
+            }
+        )
         rvTransactions.layoutManager = LinearLayoutManager(context)
         rvTransactions.adapter = adapter
 
         // Setup buttons
         btnAddIncome.setOnClickListener { showTransactionDialog(isIncome = true) }
         btnAddExpense.setOnClickListener { showTransactionDialog(isIncome = false) }
-        fabAddTransaction.setOnClickListener { showTransactionDialog(isIncome = false) }
 
         // Load saved data
         loadSavedData()
